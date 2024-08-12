@@ -48,7 +48,7 @@ fn assert_exists(path: &Path) {
 fn ensure_empty_dir_missing_dir() {
     let tempdir = TempDir::new().unwrap();
     let path = tempdir.path().join("newdir");
-    remove_dir_all::ensure_empty_dir(&path).unwrap();
+    remove_dir_all_ext::ensure_empty_dir(&path).unwrap();
     assert_empty(&path);
 }
 
@@ -58,7 +58,7 @@ fn ensure_empty_dir_existing_dir() {
     let tempdir = TempDir::new().unwrap();
     let path = tempdir.path().join("newdir");
     fs::create_dir(&path).unwrap();
-    remove_dir_all::ensure_empty_dir(&path).unwrap();
+    remove_dir_all_ext::ensure_empty_dir(&path).unwrap();
     assert_empty(&path);
 }
 
@@ -70,7 +70,7 @@ fn ensure_empty_dir_not_empty() {
     fs::create_dir(&path).unwrap();
     log::trace!("{path:?}");
     fs::write(path.join("child"), b"aa").unwrap();
-    remove_dir_all::ensure_empty_dir(&path).unwrap();
+    remove_dir_all_ext::ensure_empty_dir(&path).unwrap();
     assert_empty(&path);
 }
 
@@ -80,7 +80,7 @@ fn ensure_empty_dir_is_file() {
     let tempdir = TempDir::new().unwrap();
     let path = tempdir.path().join("newfile");
     fs::write(&path, b"aa").unwrap();
-    remove_dir_all::ensure_empty_dir(&path).unwrap_err();
+    remove_dir_all_ext::ensure_empty_dir(&path).unwrap_err();
     assert_exists(&path);
 }
 
@@ -93,7 +93,7 @@ fn ensure_empty_dir_is_filelink() {
     std::os::windows::fs::symlink_file("target", &path).unwrap();
     #[cfg(not(windows))]
     std::os::unix::fs::symlink("target", &path).unwrap();
-    remove_dir_all::ensure_empty_dir(&path).unwrap_err();
+    remove_dir_all_ext::ensure_empty_dir(&path).unwrap_err();
     assert_exists(&path);
 }
 
@@ -104,7 +104,7 @@ fn ensure_empty_dir_is_dirlink() {
     let tempdir = TempDir::new().unwrap();
     let path = tempdir.path().join("newlink");
     std::os::windows::fs::symlink_dir("target", &path).unwrap();
-    remove_dir_all::ensure_empty_dir(&path).unwrap_err();
+    remove_dir_all_ext::ensure_empty_dir(&path).unwrap_err();
     assert_exists(&path);
 }
 
@@ -116,7 +116,7 @@ fn removes_empty() {
     fs::create_dir_all(&path).unwrap();
     assert!(fs::metadata(&path).unwrap().is_dir());
 
-    remove_dir_all::remove_dir_all(&path).unwrap();
+    remove_dir_all_ext::remove_dir_all(&path).unwrap();
     assert_not_found!(&path);
 }
 
@@ -139,7 +139,7 @@ fn removes_files() {
         assert!(fs::metadata(&filepath).unwrap().is_file());
     }
 
-    remove_dir_all::remove_dir_all(&path).unwrap();
+    remove_dir_all_ext::remove_dir_all(&path).unwrap();
     assert_not_found!(&path);
 }
 
@@ -158,7 +158,7 @@ fn removes_dirs() {
         assert!(fs::metadata(&subpath).unwrap().is_dir());
     }
 
-    remove_dir_all::remove_dir_all(&path).unwrap();
+    remove_dir_all_ext::remove_dir_all(&path).unwrap();
     assert_not_found!(&path);
 }
 
@@ -207,7 +207,7 @@ fn removes_read_only() {
         }
     }
 
-    remove_dir_all::remove_dir_all(&path).unwrap();
+    remove_dir_all_ext::remove_dir_all(&path).unwrap();
     assert_not_found!(&path);
 }
 
@@ -224,7 +224,7 @@ fn removes_symlinks() {
     std::os::windows::fs::symlink_file(&link_target, link_name).unwrap();
     #[cfg(not(windows))]
     std::os::unix::fs::symlink(&link_target, &link_name).unwrap();
-    remove_dir_all::ensure_empty_dir(&root).unwrap();
+    remove_dir_all_ext::ensure_empty_dir(&root).unwrap();
     assert_exists(&root);
     assert_exists(&link_target);
 }
